@@ -12,6 +12,27 @@
 #include <fcntl.h>
 #include <string.h>
 
+//How do we return a string in C?
+void process_string(char * str) {
+    int count = 1;
+
+    for(int i = 1; i < strlen(str); i++) {
+        if (str[i] == str[i-1]) 
+            count++;
+        else {
+            if (count >= 16) {
+                // Compress bits... 
+                // Can we make a string, and then make the buffer that newly created string?
+                printf("%d\n", count);
+            }  
+            // Dump buffer into result string, reset buffer
+            // How do we add to a string in C?
+            // How can we reset our array that holds the bits we are reading?
+            count = 1;
+        }
+    }
+}
+
 int main() {
     FILE *filePointer;
 // Make this part better... how do we make a dynamically sized string?
@@ -30,18 +51,20 @@ int main() {
 // Implementation of the file reader...
     while(fgets(str, 1000, filePointer) != NULL) {
         if(strchr(str, ' ') != NULL) {
-            printf("There is a whitespace...");
+            printf("There is a whitespace...\n");
             tokens = strtok(str, " ");
             while(tokens != NULL) {
                 // Process the string of bits here
-                printf("\n%s", tokens);
+                //printf("\n%s", process_string(tokens));
+                process_string(tokens);
 
                 tokens = strtok(NULL, " ");
             }
             continue;
         }
         // Process the string of bits
-        printf("%s", str);
+        //printf("%s", str);
+        process_string(str);
     }
 
 // Close the streams
