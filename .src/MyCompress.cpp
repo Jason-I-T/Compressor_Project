@@ -32,7 +32,6 @@ void processString(string bits, fstream& outFile) {
             counter = 1; 
         }
     }
-    outFile << "\n";
 }
 
 int main() {
@@ -50,10 +49,13 @@ int main() {
         if(str.find(' ') != string::npos) {
             while(getline(iss, token, ' ')) {
                 processString(token, outFile);
+                outFile << " ";
             }
+            outFile << "\n";
             continue;
         }
         processString(str, outFile);
+        outFile << "\n";
     }
     inFile.close();
     outFile.close();
