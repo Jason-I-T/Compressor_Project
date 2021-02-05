@@ -2,29 +2,31 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <unistd.h>
 #include <cstring>
 
 using namespace std;
 
-void processString(string bits) {
+void processString(string bits, fstream& outFile) {
     char data[bits.size() + 1];
     strcpy(data, bits.c_str());
 
     int counter = 1;
-    cout << bits << "\n";
     for(int i = 0; i < bits.size(); i++) {
         if((*(data + i) - *(data + i + 1)) == 0)
                counter++; 
         else {
             if(counter < 16) {
-                   // Write compressed bits into destination file
-                   cout << counter << "\n";  
+                while(counter > 0) {
+                    outFile << data[i];
+                    counter--;
+                }
             }
 
             else {
-                   // Iterate over counter and write the appropriate bits in destination file until counter = 0.
-                   cout << counter << "\n";  
+                if(data[i] == '1')
+                    outFile << "+" << counter << "+"; 
+                else
+                    outFile << "-" << counter << "-";
             }       
 
             counter = 1; 
@@ -34,21 +36,27 @@ void processString(string bits) {
 
 int main() {
     fstream inFile;
+    fstream outFile;
     string str;
     string token;
 
     inFile.open("public/compress_me.txt", ios::in);
+    outFile.open("public/i_compressed.txt", ios::out);
 
     // Loop reads file, sends strings to get compressed and written to destination file.
     while(getline(inFile, str)) {
         istringstream iss(str);
         if(str.find(' ') != string::npos) {
             while(getline(iss, token, ' ')) {
-                processString(token);
+                processString(token, outFile);
+                outFile << " ";
             }
+            outFile << "\n";
             continue;
         }
-        processString(str);
+        processString(str, outFile);
+        outFile << "\n";
     }
     inFile.close();
+    outFile.close();
 }
