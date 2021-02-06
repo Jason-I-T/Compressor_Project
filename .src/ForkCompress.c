@@ -7,15 +7,18 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-void childProcess() {
+void childProcess(char *source, char *destination) {
     printf("starting compression...\n");
-}
-
-void parentProcess() {
-    printf("finished compression: wrote to DESTINATION using SOURCE\n");
+    printf("SOURCE: %s\n", source);
+    printf("DESTINATION: %s\n", destination);
+    printf("waiting...\n");
+    execl("./MyCompress", "./MyCompress", source, destination, NULL);
 }
 
 int main() {
+    char *source = "public/compress_me.txt";
+    char *destination = "public/destination.txt";
+
     pid_t pid;
     pid = fork(); // Creating new process
 
@@ -24,11 +27,10 @@ int main() {
     }
 
     else if(pid == 0)
-        childProcess();
+        childProcess(source, destination);
     else {
         wait(&pid);
-        printf("waiting...\n");
         printf("compressed...\n");
-        parentProcess(); 
+        printf("finished compression: wrote to \'%s\' using \'%s\'\n", source, destination);
     }
 }
