@@ -34,14 +34,23 @@ void processString(string bits, fstream& outFile) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if(argc != 3) {
+        cout << "INVALID ARGS: ./MyCompress SOURCE DESTINATION\n"; 
+        return 0;
+    }
+
     fstream inFile;
     fstream outFile;
     string str;
     string token;
+    
+    string source = argv[1];
+    string destination = argv[2];
 
-    inFile.open("public/compress_me.txt", ios::in);
-    outFile.open("public/i_compressed.txt", ios::out);
+    inFile.open(source, ios::in);
+    outFile.open(destination, ios::out);
 
     // Loop reads file, sends strings to get compressed and written to destination file.
     while(getline(inFile, str)) {
