@@ -16,6 +16,8 @@ int main() {
     string source = "public/compress_me.txt";
     string destination = "public/compressed_by_pipe.txt";
 
+    outFile.open(destination, ios::out);
+
     char newline[1] = {'\n'}, space[1] = {' '};
 
     pid_t pid;
@@ -34,7 +36,11 @@ int main() {
         close(pfd[1]);     
         char ch[1];
         while(read(pfd[0], ch, 1) > 0) {
-            cout << ch[0]; 
+            if(ch[0] != '1' && ch[0] != '0' && ch[0] != '\n' && ch[0] != ' ') {
+                continue; //Trash
+            } else {
+                outFile << ch[0]; 
+            }
         }
     } else { // Parent
         inFile.open(source, ios::in);
