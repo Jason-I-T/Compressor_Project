@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <stack>
 
 using namespace std;
 
@@ -13,10 +14,8 @@ int main() {
 
     fstream inFile;
     fstream outFile;
-    string source = "public/compress_me.txt";
+    string source = "public/test1.txt";
     string destination = "public/compressed_by_pipe.txt";
-
-    outFile.open(destination, ios::out);
 
     char newline[1] = {'\n'}, space[1] = {' '};
 
@@ -33,15 +32,40 @@ int main() {
     if(pid < 0) {
         cout << "ERROR: Fork failed" << endl; 
     } else if(pid == 0) { // Child
+        outFile.open(destination, ios::out);
         close(pfd[1]);     
-        char ch[1];
+        char ch[1], prev_bit = 'a';
+        int n = 1;
         while(read(pfd[0], ch, 1) > 0) {
             if(ch[0] != '1' && ch[0] != '0' && ch[0] != '\n' && ch[0] != ' ') {
                 continue; //Trash
-            } else {
-                outFile << ch[0]; 
+            } else { // Start of line...
+                if(prev_bit == 'a') {
+                    prev_bit = ch[0]; 
+                    continue;
+                }
+                if(ch[0] == prev_bit) {
+                    if(prev_bit == ' ' || prev_bit == '\n') {
+                        outFile << prev_bit;
+                        continue;
+                    }
+                    n++;
+                } else {
+                    if(n < 15) {
+                        for(int i = 0; i < n; i++)
+                            outFile << prev_bit;  
+                    } else {
+                        if(prev_bit == '1')
+                            outFile << '+' << n << '+'; 
+                        else if(prev_bit == '0')
+                            outFile << '-' << n << '-'; 
+                    }
+                    n = 1;
+                    prev_bit = ch[0];
+                }
             }
         }
+        close(pfd[0]);
     } else { // Parent
         inFile.open(source, ios::in);
         close(pfd[0]);
@@ -60,4 +84,7 @@ int main() {
         }
         close(pfd[1]);
     }
+
+    inFile.close();
+    outFile.close();
 }
