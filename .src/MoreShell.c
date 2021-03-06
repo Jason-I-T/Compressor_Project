@@ -8,7 +8,8 @@ int main() {
     char command[50];
     printf("<MoreShell>\n");
     fgets(command, 50, stdin);
-
+    
+    //Set new line character to null
     command[strcspn(command, "\n")] = '\0';
 
     while (strcmp(command, "exit") != 0) {
