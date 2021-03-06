@@ -60,13 +60,36 @@ void divideFile(fstream& inFile, vector<string> parts[], int numOfLines, int ind
     string line;
     int lineCount = 0;
     
-    while (getline(inFile, line)) {
-        if (lineCount >= numOfLines / chunks) {
-            index+=1;
-            lineCount = 0;
+    if (numOfLines % chunks == 0) {
+        int linesPerChunk = numOfLines / chunks;
+        while (getline(inFile, line)) {
+            if (lineCount == linesPerChunk) {
+                cout << "\n";
+                index+=1;
+                lineCount = 0;
+            }
+            cout << line << "\n";
+            parts[index].push_back(line);
+            lineCount++;
         }
-        parts[index].push_back(line);
-        lineCount++;
+    }
+    else {
+        int remainder = numOfLines % chunks;
+        int linesPerChunk = numOfLines / chunks;
+        int i = 0;
+        while (getline(inFile, line)) {
+            if (lineCount == linesPerChunk) {
+                if (i < remainder) {
+                    parts[index].push_back(line);
+                    getline(inFile, line);
+                    i++;
+                }
+                index+=1;
+                lineCount = 0;
+            }
+            parts[index].push_back(line);
+            lineCount++;
+        }
     }
     inFile.close();
 }
