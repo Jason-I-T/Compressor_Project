@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <time.h>
+#include <chrono>
 
 using namespace std;
 
@@ -60,6 +60,7 @@ void divideFile(fstream& inFile, vector<string> parts[], int numOfLines, int ind
     string line;
     int lineCount = 0;
     
+    //No remainder
     if (numOfLines % chunks == 0) {
         int linesPerChunk = numOfLines / chunks;
         while (getline(inFile, line)) {
@@ -73,6 +74,7 @@ void divideFile(fstream& inFile, vector<string> parts[], int numOfLines, int ind
             lineCount++;
         }
     }
+    //If there are remainders when dividing
     else {
         int remainder = numOfLines % chunks;
         int linesPerChunk = numOfLines / chunks;
@@ -115,7 +117,7 @@ void iterateThroughVector(vector<string>& parts, fstream &outFile) {
 }
 
 int main() {
-    clock_t tStart = clock();
+    auto start = std::chrono::steady_clock::now();
     vector<string> parts[chunks];
     pid_t pids[chunks];
     
@@ -150,9 +152,9 @@ int main() {
     for (int j = 0; j < chunks; j++) {
         wait(NULL);
     }
-    
+    auto end = std::chrono::steady_clock::now();
     cout << "Finished Writing to Output File\n";
-
-    cout << "----------------------- Time taken: " << (double) (clock() - tStart) / CLOCKS_PER_SEC << " -----------------------\n";
+    double elapsedTimeNs = double(std::chrono::duration_cast <std::chrono::nanoseconds> (end - start).count());
+    cout << "----------------------- Time taken: " << elapsedTimeNs / 1e9 << " -----------------------\n";
     return 0;
 }
