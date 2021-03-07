@@ -1,3 +1,9 @@
+/* DupShell.. #8
+ * Written by: Daniel Zeng
+ * Desc:
+ *      Added to the MoreShell capability of exeucuting command lines
+ *      with commands connected by pipes. Uses dup2 system call.
+ */
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
