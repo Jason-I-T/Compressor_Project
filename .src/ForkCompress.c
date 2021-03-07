@@ -1,6 +1,8 @@
-/*
- * Creates a new process to compress a file using MyCompress. Source & destination file 
- * names presented as command-line arguments... Main process waits...
+/* Fork Compress.. #3 of Project 1
+ * Written By: Jason Tejada
+ * Desc: 
+ *      Creates a new process to compress a file using MyCompress. Source & destination file 
+ *      names presented as command-line arguments... Main process waits...
  */
 #include <stdio.h>
 #include <unistd.h>
@@ -16,8 +18,8 @@ void childProcess(char *source, char *destination) {
 }
 
 int main() {
-    char *source = "public/compress_me.txt";
-    char *destination = "public/destination.txt";
+    char *source = "public/BigTest.txt";
+    char *destination = "public/ForkCompressed.txt";
 
     pid_t pid;
     pid = fork(); // Creating new process

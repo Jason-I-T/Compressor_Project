@@ -63,7 +63,9 @@ void processString(string bits, fstream& outFile) {
 
 int main(int argc, char *argv[]) {
 
+    // Similar to #1, we must take in arguments: ./MyDecompress MyCompress_Compressed.txt Decompressed.txt    
     if(argc != 3) {
+        cout << "INVALID ARGS: ./MyDecompress SOURCE DESTINATION\n"; 
         return 0;
     }
 

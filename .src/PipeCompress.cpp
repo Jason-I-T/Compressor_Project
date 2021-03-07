@@ -1,3 +1,9 @@
+/* PipeCompress.. #4 of Project 1
+ * Written by: Jason Tejada
+ * Desc:
+ *      Program that forks two processes; one for reading from a file and the other
+ *      for writing to a file. Programs communicate using the pipe system call.
+ */
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,8 +20,8 @@ int main() {
 
     fstream inFile;
     fstream outFile;
-    string source = "public/test1.txt";
-    string destination = "public/compressed_by_pipe.txt";
+    string source = "public/BigTest.txt";
+    string destination = "public/PipeCompressed.txt";
 
     char newline[1] = {'\n'}, space[1] = {' '};
 
