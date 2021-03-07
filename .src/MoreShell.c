@@ -9,10 +9,10 @@ int main() {
     printf("<MoreShell>\n");
     fgets(command, 50, stdin);
     
-    //Set new line character to null
 
     while (strncmp(command, "exit", 4) != 0) {
         char *args[3];
+        //Set new line character to null
         command[strcspn(command, "\n")] = '\0';
         char *tokens = strtok(command, " ");
         int count = 0;
