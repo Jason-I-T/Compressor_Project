@@ -5,12 +5,17 @@
 #include <sstream>
 #include <vector>
 #include <cstring>
+#include <semaphore.h>
+#include <time.h>
 
 using namespace std;
 
 const int chunks = 10;
 int passes = 0;
 vector<string> parts[chunks];
+
+#define MAX_SIZE 1
+sem_t work;
 
 void processString(string bits, fstream &outFile) {
     char data[bits.size() + 1];    
@@ -41,6 +46,7 @@ void processString(string bits, fstream &outFile) {
 }
 
 void *start(void * params) {
+    sem_wait(&work); 
     string line;
     fstream* outFile = static_cast<fstream*>(params);
     for(int i = 0; i < parts[passes].size(); i++) {
@@ -48,11 +54,13 @@ void *start(void * params) {
         istringstream iss(line);
         if(line.find(' ') != string::npos) {
             //CRIT
+            //pthread_mutex_lock(&mutex);
             while(getline(iss, line, ' ')) {
                 processString(line, *outFile);
                 *outFile << " ";
             } 
             *outFile << "\n";
+            //pthread_mutex_unlock(&mutex);
             //END CRIT
             continue;
         }
@@ -61,22 +69,23 @@ void *start(void * params) {
         *outFile << endl;
         //END CRIT
     }
-    
+    sem_post(&work); 
     cout << passes << endl;
     if(passes == chunks)
-        return params;
+        pthread_exit(NULL);
     //CRIT
     passes++;
     //END CRIT
-    return params;
+    pthread_exit(NULL);
 }
 
 int main(void) {
+    clock_t tStart = clock();
     pthread_t thread_id[chunks];
     int n = 0;
 
     // Getting number of lines and defining ranges....
-    fstream lineCounter("public/big_compress_me.txt", ios::in);
+    fstream lineCounter("public/big_test.txt", ios::in);
     string line;
     while(getline(lineCounter, line))
         n++;
@@ -84,7 +93,7 @@ int main(void) {
 
     int lineCount = 0;
     int index = 0;
-    fstream reader("public/big_compress_me.txt", ios::in);
+    fstream reader("public/big_test.txt", ios::in);
     for(int i = 0; i < chunks; i++) {
         while(getline(reader, line)) { // we lose some data here with the if statement...
             if(lineCount >= n / chunks) {
@@ -97,11 +106,14 @@ int main(void) {
         }
     } // End
 
+    sem_init(&work, 0, MAX_SIZE);
+
     // Starting compression steps...
-    fstream outFile("public/big_destination.txt", ios::out);
+    fstream outFile("public/big_test_destination.txt", ios::out);
     for(int i = 0; i < chunks; i++) { // Dispatch work
         pthread_create(&thread_id[i], NULL, &start, static_cast<void*>(&outFile));
     }
     for(int i = 0; i < chunks; i++) // End work
         pthread_join(thread_id[i], NULL);
+    cout << "----------------------- Time taken: " << (double) (clock() - tStart) / CLOCKS_PER_SEC << " -----------------------\n";
 }
