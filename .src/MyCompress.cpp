@@ -1,3 +1,12 @@
+/* MyCompress.. #1 of Project 1
+ * Written by: Jason Tejada
+ * Desc:
+ *      This program makes a compressed copy of an existing file of bits using system
+ *      calls for file manipulation. The rules of compression are on the project 1 
+ *      document... if there is a sequence of 1s and 0s greater than or equal to 16,
+ *      compress.
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,6 +15,7 @@
 
 using namespace std;
 
+// Compression happens here
 void processString(string bits, fstream& outFile) {
     char data[bits.size() + 1];
     strcpy(data, bits.c_str());
@@ -36,6 +46,7 @@ void processString(string bits, fstream& outFile) {
 
 int main(int argc, char *argv[]) {
 
+    // This program must accept args.. eg: ./MyCompress public/BigTest.txt public/MyCompress_Compressed.txt
     if(argc != 3) {
         cout << "INVALID ARGS: ./MyCompress SOURCE DESTINATION\n"; 
         return 0;
@@ -52,7 +63,7 @@ int main(int argc, char *argv[]) {
     inFile.open(source, ios::in);
     outFile.open(destination, ios::out);
 
-    // Loop reads file, sends strings to get compressed and written to destination file.
+    // Reads file, sends strings to get compressed and written to destination.
     while(getline(inFile, str)) {
         istringstream iss(str);
         if(str.find(' ') != string::npos) {

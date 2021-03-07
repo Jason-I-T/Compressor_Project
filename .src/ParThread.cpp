@@ -1,3 +1,9 @@
+/* ParThread.. #9 of Project 1
+ * Written by: Jason Tejada
+ * Desc:
+ *      Uses the pthread library to write a solution similar to #5 of the project.
+ *      (Conccurrency, compression)
+ */
 #include <iostream>
 #include <pthread.h>
 #include <fstream>
@@ -10,13 +16,16 @@
 
 using namespace std;
 
+// Datafields
 const int chunks = 10;
 int passes = 0;
 vector<string> parts[chunks];
 
+// Synchronization
 #define MAX_SIZE 1
 sem_t work;
 
+// Compression happens here
 void processString(string bits, fstream &outFile) {
     char data[bits.size() + 1];    
     strcpy(data, bits.c_str());
@@ -45,6 +54,7 @@ void processString(string bits, fstream &outFile) {
     }
 }
 
+// Send data to get processes
 void *start(void * params) {
     sem_wait(&work); 
     string line;
@@ -53,29 +63,23 @@ void *start(void * params) {
         line = parts[passes].at(i);
         istringstream iss(line);
         if(line.find(' ') != string::npos) {
-            //CRIT
-            //pthread_mutex_lock(&mutex);
             while(getline(iss, line, ' ')) {
                 processString(line, *outFile);
                 *outFile << " ";
             } 
             *outFile << "\n";
-            //pthread_mutex_unlock(&mutex);
-            //END CRIT
             continue;
         }
-        //CRIT
         processString(line, *outFile);
         *outFile << endl;
-        //END CRIT
     }
     sem_post(&work); 
-    cout << passes << endl;
+    cout << "Worker done: " << passes << endl;
+
+    // How we keep track of which part of the file the thread works on
     if(passes == chunks)
         pthread_exit(NULL);
-    //CRIT
     passes++;
-    //END CRIT
     pthread_exit(NULL);
 }
 
@@ -85,31 +89,32 @@ int main(void) {
     int n = 0;
 
     // Getting number of lines and defining ranges....
-    fstream lineCounter("public/big_test.txt", ios::in);
+    fstream lineCounter("public/BigTest.txt", ios::in);
     string line;
     while(getline(lineCounter, line))
         n++;
     lineCounter.close();
 
+    // Poplating the parts field with data from file
     int lineCount = 0;
     int index = 0;
-    fstream reader("public/big_test.txt", ios::in);
+    fstream reader("public/BigTest.txt", ios::in);
     for(int i = 0; i < chunks; i++) {
-        while(getline(reader, line)) { // we lose some data here with the if statement...
+        while(getline(reader, line)) {
             if(lineCount >= n / chunks) {
-                index += 1; // Critical in populating parts...
+                index += 1;
                 lineCount = 0;
             } 
 
             parts[index].push_back(line);
             lineCount++;
         }
-    } // End
-
+    }
+    
     sem_init(&work, 0, MAX_SIZE);
 
     // Starting compression steps...
-    fstream outFile("public/big_test_destination.txt", ios::out);
+    fstream outFile("public/ParThread_Compressed.txt", ios::out);
     for(int i = 0; i < chunks; i++) { // Dispatch work
         pthread_create(&thread_id[i], NULL, &start, static_cast<void*>(&outFile));
     }
