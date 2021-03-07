@@ -1,3 +1,10 @@
+/* MyDecompress.. #2 of Project 1
+ * Written by: Jason Tejada
+ * Desc:
+ *      This program decompresses a file. Input is a compressed file,
+ *      out put is the file in its original form (decompressed).
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -6,9 +13,7 @@
 
 using namespace std;
 
-// Biggest issue with this implementation - if there are multiple compressed bits of the same type in one string,
-// then we cannot handle it based on the "tokenizing" system. However, if the compressed bits are across 
-// different strings or are different types in one string then we are good. Has to do with the upper/lower bound
+// Get the number of characters between a pair of '+' or '-'.
 int getGap(char arr[], int n, char c) {
     int i = 0, j;
     for(i = 0; i < n; i++)
@@ -16,7 +21,7 @@ int getGap(char arr[], int n, char c) {
             break;
     if(i >= n - 1)
         return 0;
-    for(j = n - 1; j >= i + 1; j--) 
+    for(j = i + 1; j < n; j++) 
         if(arr[j] == c)
             break;
     if(j==i)
@@ -34,11 +39,9 @@ void decompress(string str, char c, fstream& outFile) {
     else
         bit[0] = '1';
     for(int i = 0; i < n_compressedBits; i++) {
-        cout << bit[0];
         outFile << bit[0];
     }
-    //cout << n_compressedBits << c;
-    //Cast string into int, determine whether we will write 1s or 0s, loop until we are done writing.
+
     return;
 }
 
@@ -48,7 +51,6 @@ void processString(string bits, fstream& outFile) {
 
     for(int i = 0; i < bits.size(); i++) {
         if(data[i] == '0' || data[i] == '1') {
-            cout << data[i];
             outFile << data[i];
         }
         else {
@@ -59,29 +61,35 @@ void processString(string bits, fstream& outFile) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if(argc != 3) {
+        return 0;
+    }
+
     fstream inFile;
     fstream outFile;
     string str;
     string token;
 
-    inFile.open("public/i_compressed.txt", ios::in);
-    outFile.open("public/decompressed.txt", ios::out);
+    string source = argv[1];
+    string destination = argv[2];
 
+    inFile.open(source, ios::in);
+    outFile.open(destination, ios::out);
+
+    // Reading file
     while(getline(inFile, str)) {
         istringstream iss(str);
         if(str.find(' ') != string::npos) {
             while(getline(iss, token, ' ')) {
                 processString(token, outFile);
-                cout << " ";
                 outFile << " ";
             }
-            cout << "\n";
             outFile << "\n";
             continue;
         }
         processString(str, outFile);
-        cout << "\n";
         outFile << "\n";
     }
     inFile.close();
