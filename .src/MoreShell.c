@@ -10,14 +10,14 @@ int main() {
     fgets(command, 50, stdin);
     
     //Set new line character to null
-    command[strcspn(command, "\n")] = '\0';
 
-    while (strcmp(command, "exit") != 0) {
+    while (strncmp(command, "exit", 4) != 0) {
         char *args[3];
+        command[strcspn(command, "\n")] = '\0';
         char *tokens = strtok(command, " ");
         int count = 0;
         while (tokens != NULL){
-            args[count] = malloc(5 * sizeof(char));
+            args[count] = (char*) malloc(5 * sizeof(char));
             strcpy(args[count], tokens);
             count++;
             tokens = strtok(NULL, " ");
