@@ -11,7 +11,7 @@ int main() {
     
 
     while (strncmp(command, "exit", 4) != 0) {
-        char *args[3];
+        char *args[4];
         //Set new line character to null
         command[strcspn(command, "\n")] = '\0';
         char *tokens = strtok(command, " ");
