@@ -9,13 +9,18 @@ int main() {
     printf("<MoreShell>\n");
     fgets(command, 50, stdin);
     
-
+    //Check if first 4 characters are exit
     while (strncmp(command, "exit", 4) != 0) {
+        //Create string array for the arguments
         char *args[4];
+
         //Set new line character to null
         command[strcspn(command, "\n")] = '\0';
+        
+        //Split the input by spaces
         char *tokens = strtok(command, " ");
         int count = 0;
+
         while (tokens != NULL){
             args[count] = (char*) malloc(5 * sizeof(char));
             strcpy(args[count], tokens);
@@ -23,9 +28,12 @@ int main() {
             tokens = strtok(NULL, " ");
         }
         
+        //Set certain index in the args array to null
         args[count] = NULL;
         pid_t pid;
-        pid = fork(); //Create new Process;
+
+        //Create new Process;
+        pid = fork(); 
 
         if (pid < 0) {
             printf("ERROR\n");
@@ -42,9 +50,10 @@ int main() {
             printf("Finished\n");
         }
         
-        //Set string to null
+        //Set command string to null
         command[0] = '\0';
 
+        //Take user input again
         printf("<MoreShell>\n");
         fgets(command, 50, stdin);
     }

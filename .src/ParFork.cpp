@@ -10,8 +10,10 @@
 
 using namespace std;
 
+//Number of processes created
 int chunks = 7;
 
+//Function that compresses line
 void processString(string bits, fstream &outFile) {
     char data[bits.size() + 1];
     strcpy(data, bits.c_str());
@@ -44,6 +46,7 @@ void processString(string bits, fstream &outFile) {
     }
 }
 
+//Function that gets the number of lines in the file
 int numberOfLines(fstream& inFile) {
     string line;
     int lineCount = 0;
@@ -96,7 +99,7 @@ void divideFile(fstream& inFile, vector<string> parts[], int numOfLines, int ind
     inFile.close();
 }
 
-
+//Loops through vector to get each line from the file and passes it intot the processString function
 void iterateThroughVector(vector<string>& parts, fstream &outFile) {
     string str;
     string token;
@@ -118,7 +121,10 @@ void iterateThroughVector(vector<string>& parts, fstream &outFile) {
 
 int main() {
     auto start = std::chrono::steady_clock::now();
+    
+    //Creates an array of vectors which will store each line from the file
     vector<string> parts[chunks];
+    
     pid_t pids[chunks];
     
     fstream inFile;
@@ -142,6 +148,7 @@ int main() {
         }
         else if (pids[i] == 0) {
             cout << "Reading from file\n";
+            //Passes one vector from the array into the function
             iterateThroughVector(parts[i], outFile);
             outFile.close();
             exit(0); 
@@ -152,6 +159,7 @@ int main() {
     for (int j = 0; j < chunks; j++) {
         wait(NULL);
     }
+    //Calculates execution time of the program
     auto end = std::chrono::steady_clock::now();
     cout << "Finished Writing to Output File\n";
     double elapsedTimeNs = double(std::chrono::duration_cast <std::chrono::nanoseconds> (end - start).count());
