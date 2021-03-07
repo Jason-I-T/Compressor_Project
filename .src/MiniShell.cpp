@@ -1,3 +1,10 @@
+/* MiniShell.. #6 of Project 1
+ * Written by: Daniel Zeng
+ * Desc: A shell like program that illustrates how UNIX spawns processes.
+ *       Simple program that prompt to the user, read the command from the
+ *       input and execute the command.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
